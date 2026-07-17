@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EgoNav Data - Egocentric Indoor Navigation Data for Embodied AI</title>
+    <meta
+      name="description"
+      content="Egocentric indoor navigation datasets for robot foundation models, humanoid robots, and embodied AI systems."
+    />
+    <style>
+      :root {
+        --ink: #0b1220;
+        --muted: #526071;
+        --line: #d9e1ea;
+        --soft: #f5f8fb;
+        --panel: #ffffff;
+        --teal: #0f766e;
+        --blue: #2563eb;
+        --navy: #08111f;
+        --accent: #33d5c6;
+        --max: 1160px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: #ffffff;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        border-bottom: 1px solid rgba(217, 225, 234, 0.78);
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(18px);
+      }
+
+      .nav-inner {
+        width: min(var(--max), calc(100% - 36px));
+        height: 68px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 760;
+        letter-spacing: 0;
+      }
+
+      .brand-mark {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background:
+          radial-gradient(circle at 68% 28%, #7dd3fc 0 12%, transparent 13%),
+          linear-gradient(135deg, #0f766e, #08111f 72%);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 22px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .nav-links a:hover {
+        color: var(--ink);
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 18px;
+        border: 1px solid var(--ink);
+        border-radius: 6px;
+        background: var(--ink);
+        color: #fff;
+        font-weight: 650;
+        font-size: 14px;
+      }
+
+      .button.secondary {
+        background: transparent;
+        color: var(--ink);
+        border-color: var(--line);
+      }
+
+      .hero {
+        position: relative;
+        min-height: 690px;
+        color: #fff;
+        background: var(--navy);
+        isolation: isolate;
+        overflow: hidden;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(120deg, rgba(8,17,31,.92), rgba(8,17,31,.42) 54%, rgba(15,118,110,.18)),
+          radial-gradient(circle at 74% 30%, rgba(51,213,198,.34), transparent 24%),
+          radial-gradient(circle at 78% 70%, rgba(37,99,235,.28), transparent 26%),
+          repeating-linear-gradient(90deg, rgba(255,255,255,.08) 0 1px, transparent 1px 92px),
+          repeating-linear-gradient(0deg, rgba(255,255,255,.06) 0 1px, transparent 1px 92px),
+          #08111f;
+      }
+
+      .hero-visual {
+        position: absolute;
+        right: max(28px, calc((100vw - var(--max)) / 2));
+        top: 118px;
+        width: min(42vw, 520px);
+        height: 430px;
+        border: 1px solid rgba(255,255,255,.2);
+        border-radius: 8px;
+        background:
+          linear-gradient(135deg, rgba(255,255,255,.16), rgba(255,255,255,.04)),
+          repeating-linear-gradient(35deg, transparent 0 34px, rgba(51,213,198,.22) 35px 37px),
+          rgba(8,17,31,.42);
+        box-shadow: 0 24px 80px rgba(0,0,0,.32);
+      }
+
+      .hero-visual::before,
+      .hero-visual::after {
+        content: "";
+        position: absolute;
+        border-radius: 999px;
+      }
+
+      .hero-visual::before {
+        width: 180px;
+        height: 180px;
+        left: 46px;
+        top: 62px;
+        border: 2px solid rgba(167,243,208,.75);
+        box-shadow: 150px 118px 0 -52px rgba(51,213,198,.42);
+      }
+
+      .hero-visual::after {
+        width: 12px;
+        height: 12px;
+        left: 142px;
+        top: 142px;
+        background: #33d5c6;
+        box-shadow: 70px 60px 0 #7dd3fc, 164px 112px 0 #a7f3d0, 252px 52px 0 #ffffff;
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background:
+          linear-gradient(90deg, rgba(8, 17, 31, 0.95) 0%, rgba(8, 17, 31, 0.75) 33%, rgba(8, 17, 31, 0.2) 78%),
+          linear-gradient(180deg, rgba(8, 17, 31, 0.1), rgba(8, 17, 31, 0.52));
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 2;
+        width: min(var(--max), calc(100% - 36px));
+        margin: 0 auto;
+        padding: 118px 0 78px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #a7f3d0;
+        font-size: 13px;
+        font-weight: 720;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .eyebrow::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+
+      h1 {
+        max-width: 760px;
+        margin: 22px 0 22px;
+        font-size: clamp(44px, 7vw, 82px);
+        line-height: 0.98;
+        letter-spacing: 0;
+      }
+
+      .hero-copy {
+        max-width: 650px;
+        color: #d6e4ef;
+        font-size: 20px;
+        line-height: 1.55;
+      }
+
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 34px;
+      }
+
+      .hero .button.secondary {
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.28);
+      }
+
+      .hero-metrics {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1px;
+        max-width: 760px;
+        margin-top: 72px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.14);
+      }
+
+      .metric {
+        padding: 22px;
+        background: rgba(8, 17, 31, 0.52);
+      }
+
+      .metric strong {
+        display: block;
+        font-size: 28px;
+        margin-bottom: 6px;
+      }
+
+      .metric span {
+        color: #b9c7d5;
+        font-size: 14px;
+      }
+
+      section {
+        width: min(var(--max), calc(100% - 36px));
+        margin: 0 auto;
+        padding: 86px 0;
+      }
+
+      .section-head {
+        display: grid;
+        grid-template-columns: 0.88fr 1.12fr;
+        gap: 56px;
+        align-items: end;
+        margin-bottom: 34px;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: clamp(30px, 4.2vw, 52px);
+        line-height: 1.04;
+        letter-spacing: 0;
+      }
+
+      .section-head p,
+      .lead {
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1.65;
+      }
+
+      .band {
+        width: 100%;
+        background: var(--soft);
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+      }
+
+      .product-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .product {
+        border: 1px solid var(--line);
+        background: var(--panel);
+        border-radius: 8px;
+        padding: 24px;
+        min-height: 238px;
+      }
+
+      .product small {
+        color: var(--teal);
+        font-weight: 760;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .product h3 {
+        margin: 16px 0 10px;
+        font-size: 23px;
+      }
+
+      .product p,
+      .step p,
+      .use p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .pipeline {
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      .step {
+        border-top: 3px solid var(--teal);
+        padding: 18px 12px 0 0;
+      }
+
+      .step strong {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 18px;
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 52px;
+        align-items: start;
+      }
+
+      .feature-list {
+        display: grid;
+        gap: 14px;
+      }
+
+      .feature {
+        border-bottom: 1px solid var(--line);
+        padding-bottom: 14px;
+      }
+
+      .feature strong {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .feature span {
+        color: var(--muted);
+        line-height: 1.5;
+      }
+
+      .use-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .use {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 22px;
+      }
+
+      .use h3 {
+        margin: 0 0 12px;
+      }
+
+      .tiers {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .tier {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 24px;
+        background: #fff;
+      }
+
+      .tier h3 {
+        margin: 0 0 10px;
+      }
+
+      .tier ul {
+        margin: 18px 0 0;
+        padding-left: 18px;
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      .contact {
+        display: grid;
+        grid-template-columns: 0.9fr 1.1fr;
+        gap: 48px;
+        align-items: start;
+      }
+
+      form {
+        display: grid;
+        gap: 12px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 24px;
+        background: #fff;
+      }
+
+      label {
+        display: grid;
+        gap: 7px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 650;
+      }
+
+      input,
+      textarea,
+      select {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 12px 12px;
+        font: inherit;
+        color: var(--ink);
+        background: #fff;
+      }
+
+      textarea {
+        min-height: 112px;
+        resize: vertical;
+      }
+
+      .footer {
+        width: min(var(--max), calc(100% - 36px));
+        margin: 0 auto;
+        padding: 34px 0 46px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        font-size: 14px;
+      }
+
+      @media (max-width: 900px) {
+        .nav-links {
+          display: none;
+        }
+
+        .hero {
+          min-height: 760px;
+        }
+
+        .hero-visual {
+          right: 18px;
+          top: auto;
+          bottom: 34px;
+          width: calc(100% - 36px);
+          height: 210px;
+          opacity: .48;
+        }
+
+        .hero-content {
+          padding-top: 92px;
+        }
+
+        .hero-metrics,
+        .product-grid,
+        .pipeline,
+        .split,
+        .use-grid,
+        .tiers,
+        .contact,
+        .section-head {
+          grid-template-columns: 1fr;
+        }
+
+        .pipeline {
+          gap: 24px;
+        }
+
+        section {
+          padding: 64px 0;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .hero-actions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="nav">
+      <div class="nav-inner">
+        <a class="brand" href="#top" aria-label="EgoNav Data home">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span>EgoNav Data</span>
+        </a>
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href="#datasets">Datasets</a>
+          <a href="#system">Collection System</a>
+          <a href="#use-cases">Use Cases</a>
+          <a href="#compliance">Compliance</a>
+          <a class="button" href="#contact">Request Pilot</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-label="Hero">
+        <div class="hero-visual" aria-hidden="true"></div>
+        <div class="hero-content">
+          <div class="eyebrow">Egocentric Indoor Navigation Data</div>
+          <h1>Real-world movement data for embodied AI.</h1>
+          <p class="hero-copy">
+            We collect and structure first-person indoor navigation episodes so robot foundation models can learn
+            how people observe, move, avoid obstacles, and re-plan inside homes, offices, warehouses, and service environments.
+          </p>
+          <div class="hero-actions">
+            <a class="button" href="#contact">Request a pilot dataset</a>
+            <a class="button secondary" href="#datasets">Explore data products</a>
+          </div>
+          <div class="hero-metrics" aria-label="Key capabilities">
+            <div class="metric">
+              <strong>6</strong>
+              <span>navigation dataset families</span>
+            </div>
+            <div class="metric">
+              <strong>Multi-modal</strong>
+              <span>egocentric video, IMU, trajectory, maps</span>
+            </div>
+            <div class="metric">
+              <strong>Privacy-first</strong>
+              <span>de-identification and audit-ready consent</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="datasets">
+        <div class="section-head">
+          <h2>Datasets built around indoor decisions.</h2>
+          <p>
+            Each route episode captures not only what the environment looks like, but also why a person stops,
+            turns, avoids, waits, or re-plans in dynamic indoor space.
+          </p>
+        </div>
+        <div class="product-grid">
+          <article class="product">
+            <small>Homes</small>
+            <h3>HomeNav</h3>
+            <p>Multi-room home navigation across kitchens, living rooms, bedrooms, hallways, doors, furniture, pets, and clutter.</p>
+          </article>
+          <article class="product">
+            <small>Workplaces</small>
+            <h3>OfficeNav</h3>
+            <p>Office and building-scale routes covering desks, meeting rooms, elevators, corridors, access points, and changing layouts.</p>
+          </article>
+          <article class="product">
+            <small>Operations</small>
+            <h3>WarehouseNav</h3>
+            <p>Warehouse and factory movement data around racks, pallets, carts, boxes, workers, AMRs, forklifts, and temporary obstacles.</p>
+          </article>
+          <article class="product">
+            <small>Service</small>
+            <h3>ServiceNav</h3>
+            <p>Restaurant, hotel, retail, and mall navigation with dense seating, human traffic, waiting, yielding, and narrow passages.</p>
+          </article>
+          <article class="product">
+            <small>Care</small>
+            <h3>HospitalNav</h3>
+            <p>Safety-focused hospital and care routes around beds, wheelchairs, carts, elevators, doors, nurse stations, and patient rooms.</p>
+          </article>
+          <article class="product">
+            <small>Planning</small>
+            <h3>DynamicObstacle</h3>
+            <p>High-value re-planning episodes: people crossing, doors opening, chairs moving, pets appearing, carts blocking paths.</p>
+          </article>
+        </div>
+      </section>
+
+      <div class="band">
+        <section id="system">
+          <div class="section-head">
+            <h2>A collection system for robot-training data, not raw footage.</h2>
+            <p>
+              The template assumes your hardware roadmap: head-mounted egocentric cameras plus synchronized IMU
+              modules on the head, waist, wrists, or ankles.
+            </p>
+          </div>
+          <div class="pipeline">
+            <div class="step">
+              <strong>Capture</strong>
+              <p>First-person video and optional third-person reference in real indoor spaces.</p>
+            </div>
+            <div class="step">
+              <strong>Sync</strong>
+              <p>Time-aligned cameras and IMU streams for route-level reconstruction.</p>
+            </div>
+            <div class="step">
+              <strong>Reconstruct</strong>
+              <p>Relative trajectory, SLAM outputs, free space, and route complexity.</p>
+            </div>
+            <div class="step">
+              <strong>Annotate</strong>
+              <p>Scene semantics, obstacles, decision points, re-plans, and failures.</p>
+            </div>
+            <div class="step">
+              <strong>De-identify</strong>
+              <p>Faces, screens, addresses, location traces, and sensitive areas are removed or masked.</p>
+            </div>
+            <div class="step">
+              <strong>Deliver</strong>
+              <p>Dataset packages for model training, simulation calibration, or benchmark evaluation.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section id="labels">
+        <div class="split">
+          <div>
+            <h2>Label what matters for navigation.</h2>
+            <p class="lead">
+              The highest-value labels are not generic object tags. They capture passability, dynamic obstacles,
+              route decisions, and the reason a human changes course.
+            </p>
+          </div>
+          <div class="feature-list">
+            <div class="feature">
+              <strong>Level 1 - Route metadata</strong>
+              <span>Scene type, start, goal, success/failure, route quality, lighting, and sensor quality.</span>
+            </div>
+            <div class="feature">
+              <strong>Level 2 - Navigation semantics</strong>
+              <span>Free space, doors, corridors, key obstacles, ground surfaces, human traffic, and semantic zones.</span>
+            </div>
+            <div class="feature">
+              <strong>Level 3 - Spatial structure</strong>
+              <span>2.5D distance, footprints, 3D boxes for key objects, occupancy maps, and dynamic obstacle trajectories.</span>
+            </div>
+            <div class="feature">
+              <strong>Level 4 - Behavior decisions</strong>
+              <span>Stops, gaze shifts, yielding, waiting, route re-plans, and the cause of each navigation decision.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="band">
+        <section id="use-cases">
+          <div class="section-head">
+            <h2>Designed for teams building robots that move indoors.</h2>
+            <p>
+              Use this section to name the buyers you care about: robot foundation model teams, humanoid robotics
+              companies, indoor service robot companies, and simulation platforms.
+            </p>
+          </div>
+          <div class="use-grid">
+            <article class="use">
+              <h3>Robot foundation models</h3>
+              <p>Pretraining and evaluation data for VLA, world models, robot policy learning, and embodied reasoning.</p>
+            </article>
+            <article class="use">
+              <h3>Humanoid robots</h3>
+              <p>Human priors for walking, turning, obstacle avoidance, yielding, waiting, and route re-planning.</p>
+            </article>
+            <article class="use">
+              <h3>Indoor service robots</h3>
+              <p>Hospitals, restaurants, hotels, offices, and commercial buildings with dense human movement.</p>
+            </article>
+            <article class="use">
+              <h3>Simulation platforms</h3>
+              <p>Ground-truth trajectories, dynamic obstacles, semantic maps, and sensor calibration for sim-to-real.</p>
+            </article>
+          </div>
+        </section>
+      </div>
+
+      <section id="packages">
+        <div class="section-head">
+          <h2>Package data by value, not by video hours.</h2>
+          <p>
+            Keep the first commercial offer simple. Let customers start with a pilot, then expand into Pro and
+            Premium datasets once the format proves useful in their training pipeline.
+          </p>
+        </div>
+        <div class="tiers">
+          <article class="tier">
+            <h3>Basic</h3>
+            <p>For customer discovery and model team evaluation.</p>
+            <ul>
+              <li>Egocentric RGB video</li>
+              <li>Scene and route metadata</li>
+              <li>Start, goal, success, failure</li>
+              <li>Basic dynamic event labels</li>
+            </ul>
+          </article>
+          <article class="tier">
+            <h3>Pro</h3>
+            <p>For training and controlled benchmarking.</p>
+            <ul>
+              <li>Egocentric video + IMU</li>
+              <li>Relative trajectory</li>
+              <li>Free-space and obstacle labels</li>
+              <li>Optional third-person reference</li>
+            </ul>
+          </article>
+          <article class="tier">
+            <h3>Premium</h3>
+            <p>For simulation, world models, and high-value robotics programs.</p>
+            <ul>
+              <li>Multi-sensor synchronized streams</li>
+              <li>3D object and occupancy maps</li>
+              <li>Dynamic obstacle trajectories</li>
+              <li>Decision and re-planning labels</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <div class="band">
+        <section id="compliance">
+          <div class="split">
+            <div>
+              <h2>Privacy-first by default.</h2>
+              <p class="lead">
+                Cross-border robotics data needs an audit trail. This template frames compliance as part of the
+                product: consent, de-identification, restricted use, and customer-side controls.
+              </p>
+            </div>
+            <div class="feature-list">
+              <div class="feature">
+                <strong>Consent and collection scope</strong>
+                <span>Participants and venues understand the purpose, data categories, and commercial AI training use.</span>
+              </div>
+              <div class="feature">
+                <strong>De-identification pipeline</strong>
+                <span>Faces, voices, addresses, screens, documents, GPS traces, and sensitive environments are removed or masked.</span>
+              </div>
+              <div class="feature">
+                <strong>Export-ready dataset packages</strong>
+                <span>Raw data stays controlled; customers receive de-identified video, trajectories, labels, and derived maps.</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section id="contact">
+        <div class="contact">
+          <div>
+            <h2>Request a pilot dataset.</h2>
+            <p class="lead">
+              Replace this copy with your real email or connect the form to your CRM. The initial CTA should ask
+              buyers for their target scene, robot type, and preferred label depth.
+            </p>
+            <p class="lead" style="margin-top: 22px;">
+              Contact: <a href="mailto:hello@egonavdata.ai">hello@egonavdata.ai</a>
+            </p>
+          </div>
+          <form>
+            <label>
+              Work email
+              <input type="email" name="email" placeholder="name@company.com" />
+            </label>
+            <label>
+              Company type
+              <select name="company_type">
+                <option>Robot foundation model / VLA</option>
+                <option>Humanoid robotics</option>
+                <option>Indoor service robotics</option>
+                <option>Simulation / synthetic data platform</option>
+                <option>Other</option>
+              </select>
+            </label>
+            <label>
+              Target dataset
+              <select name="dataset">
+                <option>HomeNav</option>
+                <option>OfficeNav</option>
+                <option>WarehouseNav</option>
+                <option>ServiceNav</option>
+                <option>HospitalNav</option>
+                <option>DynamicObstacle</option>
+              </select>
+            </label>
+            <label>
+              What are you trying to train or evaluate?
+              <textarea name="message" placeholder="Tell us about the robot, scene, and data format you need."></textarea>
+            </label>
+            <button class="button" type="button">Request pilot</button>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>© 2026 EgoNav Data. Replace with your company name.</span>
+      <span>Egocentric indoor navigation data for embodied AI.</span>
+    </footer>
+  </body>
+</html>
